@@ -1,5 +1,5 @@
 {
-  "name": "@ss-2/snfoundry",
+  "name": "@chronoshield/snfoundry",
   "version": "0.0.1",
   "scripts": {
     "chain": "starknet-devnet --seed 0",
@@ -7,7 +7,7 @@
     "compile": "ts-node scripts-ts/compile.ts",
     "deploy": "ts-node scripts-ts/helpers/deploy-wrapper.ts",
     "deploy:clear": "cd deployments && node clear.mjs $* && cd .. && ts-node scripts-ts/helpers/deploy-wrapper.ts $*",
-    "deploy:no-reset": "yarn workspace @ss-2/snfoundry deploy --no-reset",
+    "deploy:no-reset": "yarn workspace @chronoshield/snfoundry deploy --no-reset",
     "format": "prettier --write 'scripts-ts/**/*.{ts,tsx}' && cd contracts && scarb fmt",
     "format:check": "prettier --check 'scripts-ts/**/*.{ts,tsx}' && cd contracts && scarb fmt --check",
     "postinstall": "shx cp -n .env.example .env",

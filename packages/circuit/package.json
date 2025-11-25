@@ -1,0 +1,12 @@
+{
+  "name": "@chronoshield/circuit",
+  "version": "0.1.2",
+  "private": true,
+  "scripts": {
+    "build": "nargo build",
+    "exec": "nargo execute",
+    "prove": "bb prove --scheme ultra_honk --oracle_hash starknet -b ./target/circuit.json -w ./target/witness.gz -o ./target/",
+    "gen-vk": "bb write_vk --scheme ultra_honk --oracle_hash starknet -b ./target/circuit.json -o ./target",
+    "gen-verifier": "cd ../snfoundry && garaga gen --system ultra_starknet_honk --vk ../circuit/target/vk --project-name verifier"
+  }
+}

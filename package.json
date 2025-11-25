@@ -1,5 +1,5 @@
 {
-  "name": "ss-2",
+  "name": "chronoshield",
   "version": "2.0.1",
   "private": true,
   "license": "MIT",
@@ -8,29 +8,35 @@
     "packages": [
       "packages/snfoundry",
       "packages/nextjs",
-      "packages/auco"
+      "packages/auco",
+      "packages/circuit"
     ]
   },
   "scripts": {
-    "chain": "yarn workspace @ss-2/snfoundry chain",
-    "clean": "yarn workspace @ss-2/snfoundry clean",
-    "compile": "yarn workspace @ss-2/snfoundry compile",
-    "deploy": "yarn workspace @ss-2/snfoundry deploy",
-    "deploy:clear": "yarn workspace @ss-2/snfoundry deploy:clear",
-    "deploy:no-reset": "yarn workspace @ss-2/snfoundry deploy --no-reset",
-    "format": "yarn workspace @ss-2/nextjs format && yarn workspace @ss-2/snfoundry format",
-    "format:check": "yarn workspace @ss-2/nextjs format:check && yarn workspace @ss-2/snfoundry format:check",
-    "next:check-types": "yarn workspace @ss-2/nextjs check-types",
-    "next:lint": "yarn workspace @ss-2/nextjs lint",
+    "chain": "yarn workspace @chronoshield/snfoundry chain",
+    "clean": "yarn workspace @chronoshield/snfoundry clean",
+    "compile": "yarn workspace @chronoshield/snfoundry compile",
+    "deploy": "yarn workspace @chronoshield/snfoundry deploy",
+    "deploy:clear": "yarn workspace @chronoshield/snfoundry deploy:clear",
+    "deploy:no-reset": "yarn workspace @chronoshield/snfoundry deploy --no-reset",
+    "format": "yarn workspace @chronoshield/nextjs format && yarn workspace @chronoshield/snfoundry format",
+    "format:check": "yarn workspace @chronoshield/nextjs format:check && yarn workspace @chronoshield/snfoundry format:check",
+    "next:check-types": "yarn workspace @chronoshield/nextjs check-types",
+    "next:lint": "yarn workspace @chronoshield/nextjs lint",
     "prepare": "husky",
-    "start": "yarn workspace @ss-2/nextjs dev",
-    "test": "yarn workspace @ss-2/snfoundry test",
-    "test:nextjs": "yarn workspace @ss-2/nextjs test",
-    "vercel": "yarn workspace @ss-2/nextjs vercel",
-    "vercel:yolo": "yarn workspace @ss-2/nextjs vercel:yolo",
-    "verify": "yarn workspace @ss-2/snfoundry verify",
-    "auco:dev": "yarn workspace @ss-2/auco dev",
-    "auco:start": "yarn workspace @ss-2/auco start"
+    "start": "yarn workspace @chronoshield/nextjs dev",
+    "test": "yarn workspace @chronoshield/snfoundry test",
+    "test:nextjs": "yarn workspace @chronoshield/nextjs test",
+    "vercel": "yarn workspace @chronoshield/nextjs vercel",
+    "vercel:yolo": "yarn workspace @chronoshield/nextjs vercel:yolo",
+    "verify": "yarn workspace @chronoshield/snfoundry verify",
+    "auco:dev": "yarn workspace @chronoshield/auco dev",
+    "auco:start": "yarn workspace @chronoshield/auco start",
+    "circuit:build": "yarn workspace @chronoshield/circuit build",
+    "circuit:exec": "yarn workspace @chronoshield/circuit exec",
+    "circuit:gen-verifier": "yarn workspace @chronoshield/circuit gen-verifier",
+    "circuit:gen-vk": "yarn workspace @chronoshield/circuit gen-vk",
+    "circuit:prove": "yarn workspace @chronoshield/circuit prove"
   },
   "dependencies": {
     "postcss": "^8.4.38"
