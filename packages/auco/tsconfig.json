@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "resolveJsonModule": true
+  },
+  "include": ["test.ts", "src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
