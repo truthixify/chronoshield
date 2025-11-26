@@ -1203,6 +1203,134 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chronoshield/auco@workspace:packages/auco":
+  version: 0.0.0-use.local
+  resolution: "@chronoshield/auco@workspace:packages/auco"
+  dependencies:
+    "@types/cors": ^2.8.17
+    "@types/express": ^4.17.21
+    "@types/morgan": ^1.9.9
+    "@types/node": ^20.10.0
+    "@types/ws": ^8.18.1
+    abi-wan-kanabi: ^2.2.4
+    ansi-escapes: ^6.2.0
+    auco: ^0.1.0
+    better-sqlite3: latest
+    cors: ^2.8.5
+    dotenv: ^16.3.1
+    express: ^4.18.2
+    helmet: ^7.1.0
+    morgan: ^1.10.0
+    nodemon: ^3.0.0
+    starknet: ^7.1.0
+    ts-node: ^10.9.0
+    typescript: ^5.3.0
+    ws: ^8.18.3
+  languageName: unknown
+  linkType: soft
+
+"@chronoshield/circuit@workspace:packages/circuit":
+  version: 0.0.0-use.local
+  resolution: "@chronoshield/circuit@workspace:packages/circuit"
+  languageName: unknown
+  linkType: soft
+
+"@chronoshield/nextjs@workspace:packages/nextjs":
+  version: 0.0.0-use.local
+  resolution: "@chronoshield/nextjs@workspace:packages/nextjs"
+  dependencies:
+    "@heroicons/react": ^2.1.3
+    "@keplr-wallet/common": ^0.12.175
+    "@keplr-wallet/cosmos": ^0.12.175
+    "@keplr-wallet/provider-extension": ^0.12.175
+    "@keplr-wallet/types": ^0.12.175
+    "@keplr-wallet/unit": ^0.12.175
+    "@radix-ui/react-icons": 1.3.0
+    "@radix-ui/themes": 2.0.3
+    "@scaffold-stark/stark-burner": ^0.1.13
+    "@starknet-io/types-js": ^0.8.4
+    "@starknet-react/chains": ^5.0.1
+    "@starknet-react/core": ^5.0.1
+    "@starknet-react/typescript-config": 0.0.2
+    "@tailwindcss/postcss": ^4
+    "@testing-library/dom": ^10.4.0
+    "@testing-library/jest-dom": ^6.6.3
+    "@testing-library/react": ^16.2.0
+    "@types/next-pwa": ^5
+    "@types/node": ^22
+    "@types/nprogress": ^0
+    "@types/react": 19.0.12
+    "@types/react-copy-to-clipboard": ^5.0.4
+    "@types/react-dom": 19.0.4
+    "@vitejs/plugin-react": ^4.3.4
+    "@vitest/coverage-istanbul": ^2.1.1
+    "@vitest/coverage-v8": ^2.1.1
+    abi-wan-kanabi: ^2.2.4
+    blo: ^1.1.1
+    daisyui: latest
+    eslint: ^8
+    eslint-config-next: 15.2.3
+    ethers: ^6.12.0
+    get-starknet-core: ^4.0.0
+    jsdom: ^26.0.0
+    minimatch: ^10.0.0
+    next: 15.2.4
+    next-pwa: ^5.6.0
+    next-themes: ^0.2.1
+    nprogress: ^0.2.0
+    postcss: ^8.5.6
+    prettier: ^3.4.2
+    prettier-standalone: ^1.3.1-0
+    qrcode.react: ^3.1.0
+    react: 19.0.0
+    react-copy-to-clipboard: ^5.1.0
+    react-dom: 19.0.0
+    react-hot-toast: ^2.4.1
+    shx: ^0.4.0
+    starknet: 8.5.3
+    tailwindcss: ^4
+    type-fest: ^4.6.0
+    typescript: ^5
+    usehooks-ts: ^2.13.0
+    vercel: ^33.7.1
+    vite: ^6.2.3
+    vitest: ^3.0.9
+    webpack: ^5.97.1
+    webpack-cli: ^6.0.1
+    zustand: ^4.1.2
+  peerDependencies:
+    "@babel/core": ^7.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+    webpack: ^5.0.0
+  languageName: unknown
+  linkType: soft
+
+"@chronoshield/snfoundry@workspace:packages/snfoundry":
+  version: 0.0.0-use.local
+  resolution: "@chronoshield/snfoundry@workspace:packages/snfoundry"
+  dependencies:
+    "@types/node": ^22
+    "@types/prettier": ^2
+    "@types/yargs": ^17.0.32
+    chalk: ^5.4.1
+    dotenv: ^16.3.1
+    envfile: ^6.18.0
+    globals: ^15.8.0
+    prettier: ^2.8.8
+    shx: ^0.4.0
+    starknet: 8.5.3
+    toml: ^3.0.0
+    ts-node: ^10.9.2
+    tslib: ^2.6.2
+    typescript: ^5
+    typescript-eslint: ^7.16.1
+    yargs: ^17.7.2
+  peerDependencies:
+    eslint: ^8.0.0
+  languageName: unknown
+  linkType: soft
+
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
   resolution: "@cspotcode/source-map-support@npm:0.8.1"
@@ -3933,128 +4061,6 @@ __metadata:
   checksum: 10219c58f40b8414c50b483b0550445e9710d4fe7b2c4dccb9b66533dd90ba8e024acc776026cebe81e87f06fa24b07fdd7bc30dd277eb9cc386ec50151a3026
   languageName: node
   linkType: hard
-
-"@ss-2/auco@workspace:packages/auco":
-  version: 0.0.0-use.local
-  resolution: "@ss-2/auco@workspace:packages/auco"
-  dependencies:
-    "@types/cors": ^2.8.17
-    "@types/express": ^4.17.21
-    "@types/morgan": ^1.9.9
-    "@types/node": ^20.10.0
-    "@types/ws": ^8.18.1
-    abi-wan-kanabi: ^2.2.4
-    ansi-escapes: ^6.2.0
-    auco: ^0.1.0
-    better-sqlite3: latest
-    cors: ^2.8.5
-    dotenv: ^16.3.1
-    express: ^4.18.2
-    helmet: ^7.1.0
-    morgan: ^1.10.0
-    nodemon: ^3.0.0
-    starknet: ^7.1.0
-    ts-node: ^10.9.0
-    typescript: ^5.3.0
-    ws: ^8.18.3
-  languageName: unknown
-  linkType: soft
-
-"@ss-2/nextjs@workspace:packages/nextjs":
-  version: 0.0.0-use.local
-  resolution: "@ss-2/nextjs@workspace:packages/nextjs"
-  dependencies:
-    "@heroicons/react": ^2.1.3
-    "@keplr-wallet/common": ^0.12.175
-    "@keplr-wallet/cosmos": ^0.12.175
-    "@keplr-wallet/provider-extension": ^0.12.175
-    "@keplr-wallet/types": ^0.12.175
-    "@keplr-wallet/unit": ^0.12.175
-    "@radix-ui/react-icons": 1.3.0
-    "@radix-ui/themes": 2.0.3
-    "@scaffold-stark/stark-burner": ^0.1.13
-    "@starknet-io/types-js": ^0.8.4
-    "@starknet-react/chains": ^5.0.1
-    "@starknet-react/core": ^5.0.1
-    "@starknet-react/typescript-config": 0.0.2
-    "@tailwindcss/postcss": ^4
-    "@testing-library/dom": ^10.4.0
-    "@testing-library/jest-dom": ^6.6.3
-    "@testing-library/react": ^16.2.0
-    "@types/next-pwa": ^5
-    "@types/node": ^22
-    "@types/nprogress": ^0
-    "@types/react": 19.0.12
-    "@types/react-copy-to-clipboard": ^5.0.4
-    "@types/react-dom": 19.0.4
-    "@vitejs/plugin-react": ^4.3.4
-    "@vitest/coverage-istanbul": ^2.1.1
-    "@vitest/coverage-v8": ^2.1.1
-    abi-wan-kanabi: ^2.2.4
-    blo: ^1.1.1
-    daisyui: latest
-    eslint: ^8
-    eslint-config-next: 15.2.3
-    ethers: ^6.12.0
-    get-starknet-core: ^4.0.0
-    jsdom: ^26.0.0
-    minimatch: ^10.0.0
-    next: 15.2.4
-    next-pwa: ^5.6.0
-    next-themes: ^0.2.1
-    nprogress: ^0.2.0
-    postcss: ^8.5.6
-    prettier: ^3.4.2
-    prettier-standalone: ^1.3.1-0
-    qrcode.react: ^3.1.0
-    react: 19.0.0
-    react-copy-to-clipboard: ^5.1.0
-    react-dom: 19.0.0
-    react-hot-toast: ^2.4.1
-    shx: ^0.4.0
-    starknet: 8.5.3
-    tailwindcss: ^4
-    type-fest: ^4.6.0
-    typescript: ^5
-    usehooks-ts: ^2.13.0
-    vercel: ^33.7.1
-    vite: ^6.2.3
-    vitest: ^3.0.9
-    webpack: ^5.97.1
-    webpack-cli: ^6.0.1
-    zustand: ^4.1.2
-  peerDependencies:
-    "@babel/core": ^7.0.0
-    react: ^18.0.0 || ^19.0.0
-    react-dom: ^18.0.0 || ^19.0.0
-    webpack: ^5.0.0
-  languageName: unknown
-  linkType: soft
-
-"@ss-2/snfoundry@workspace:packages/snfoundry":
-  version: 0.0.0-use.local
-  resolution: "@ss-2/snfoundry@workspace:packages/snfoundry"
-  dependencies:
-    "@types/node": ^22
-    "@types/prettier": ^2
-    "@types/yargs": ^17.0.32
-    chalk: ^5.4.1
-    dotenv: ^16.3.1
-    envfile: ^6.18.0
-    globals: ^15.8.0
-    prettier: ^2.8.8
-    shx: ^0.4.0
-    starknet: 8.5.3
-    toml: ^3.0.0
-    ts-node: ^10.9.2
-    tslib: ^2.6.2
-    typescript: ^5
-    typescript-eslint: ^7.16.1
-    yargs: ^17.7.2
-  peerDependencies:
-    eslint: ^8.0.0
-  languageName: unknown
-  linkType: soft
 
 "@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.10, @starknet-io/types-js@npm:^0.7.7":
   version: 0.7.10
@@ -6930,6 +6936,18 @@ __metadata:
   checksum: fcbbd9dd0cd5b48444319007cc0c15870fd8612cc0df320908aa9d5e8a244084d48571eb28bf3c58c19327d2c5838f354c2d89fac3956d8e992273437401ac19
   languageName: node
   linkType: hard
+
+"chronoshield@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "chronoshield@workspace:."
+  dependencies:
+    daisyui: ^4.7.3
+    husky: ^9.0.11
+    pinst: ^3.0.0
+    postcss: ^8.4.38
+    prettier: ^3.2.5
+  languageName: unknown
+  linkType: soft
 
 "ci-info@npm:^3.7.0":
   version: 3.9.0
@@ -13841,18 +13859,6 @@ __metadata:
   checksum: 1e7e2d51c38a0cf7372e875408ca100b6e0c9a941ab7773975ea41fb36e5528e404dc787689be855780cf6d0a829ff71027964ae3a05a7446e91dce26672fda7
   languageName: node
   linkType: hard
-
-"ss-2@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "ss-2@workspace:."
-  dependencies:
-    daisyui: ^4.7.3
-    husky: ^9.0.11
-    pinst: ^3.0.0
-    postcss: ^8.4.38
-    prettier: ^3.2.5
-  languageName: unknown
-  linkType: soft
 
 "ssri@npm:^12.0.0":
   version: 12.0.0
