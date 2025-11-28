@@ -1,5 +1,5 @@
-use crate::types::{MarketInfo, MarketType};
 use starknet::ContractAddress;
+use crate::types::{MarketInfo, MarketType};
 
 #[starknet::interface]
 pub trait IMarket<T> {
@@ -12,8 +12,12 @@ pub trait IMarket<T> {
     fn add_liquidity(ref self: T, amount: u256);
     fn remove_liquidity(ref self: T, tokens: u256);
     fn get_price(self: @T, outcome_id: u256) -> u256;
-    fn getQuoteBuy(self: @T, outcome_id: u256, collateral_in: u256, user: ContractAddress) -> (u256, u256);
-    fn getQuoteSell(self: @T, outcome_id: u256, tokens_in: u256, user: ContractAddress) -> (u256, u256);
+    fn getQuoteBuy(
+        self: @T, outcome_id: u256, collateral_in: u256, user: ContractAddress,
+    ) -> (u256, u256);
+    fn getQuoteSell(
+        self: @T, outcome_id: u256, tokens_in: u256, user: ContractAddress,
+    ) -> (u256, u256);
     fn get_reserves(self: @T) -> (u256, u256);
     fn fund_redemptions(ref self: T);
 }

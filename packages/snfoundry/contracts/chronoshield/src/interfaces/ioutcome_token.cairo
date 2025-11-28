@@ -14,7 +14,7 @@ pub trait IOutcomeToken<TContractState> {
         market_id: u256,
         outcome_id: u256,
         to: ContractAddress,
-        amount: u256
+        amount: u256,
     );
 
     fn burn_outcome(
@@ -22,12 +22,12 @@ pub trait IOutcomeToken<TContractState> {
         market_id: u256,
         outcome_id: u256,
         from: ContractAddress,
-        amount: u256
+        amount: u256,
     );
 
     // Read functions
     fn balance_of_outcome(
-        self: @TContractState, user: ContractAddress, market_id: u256, outcome_id: u256
+        self: @TContractState, user: ContractAddress, market_id: u256, outcome_id: u256,
     ) -> u256;
     fn is_resolved(self: @TContractState, market_id: u256) -> bool;
 }

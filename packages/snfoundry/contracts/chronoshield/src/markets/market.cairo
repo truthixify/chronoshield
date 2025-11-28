@@ -1,19 +1,18 @@
 #[starknet::contract]
 pub mod Market {
+    use core::num::traits::zero;
     use core::to_byte_array::FormatAsByteArray;
-use core::num::traits::zero;
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::security::{PausableComponent, ReentrancyGuardComponent};
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
-    use starknet::storage::{
-        StoragePointerReadAccess, StoragePointerWriteAccess,
-    };
+    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
     use zero::Zero;
+    use crate::interfaces::ifee_splitter::{IFeeSplitterDispatcher, IFeeSplitterDispatcherTrait};
+    use crate::interfaces::imarket::IMarket;
     // use crate::interfaces::ilp_token::{ILPTokenDispatcher, ILPTokenDispatcherTrait};
     use crate::interfaces::ioutcome_token::{IOutcomeTokenDispatcher, IOutcomeTokenDispatcherTrait};
-    use crate::interfaces::imarket::IMarket;
     use crate::types::{MarketInfo, MarketType};
 
     #[storage]
@@ -151,9 +150,9 @@ use core::num::traits::zero;
         self.ownable.initializer(admin);
         self.erc20.initializer(lp_token_name, lp_token_symbol);
         // TODO: Initialize ERC20 with the token name and symbol
-        // TODO: Deploy feesplitter
-        // TODO: Deploy horizon perks
-        // TODO: Deploy outcome token
+    // TODO: Deploy feesplitter
+    // TODO: Deploy horizon perks
+    // TODO: Deploy outcome token
     }
 
     pub impl MarketImpl of IMarket<ContractState> {
@@ -171,11 +170,13 @@ use core::num::traits::zero;
                 outcome_count: 2,
                 is_resolved: self.is_resolved.read(),
                 is_paused: self.is_paused.read(),
-                collateral_token: self.collateral_token.read()
+                collateral_token: self.collateral_token.read(),
             }
         }
 
-        fn buy(ref self: ContractState, outcome_id: u256, collateral_in: u256, min_tokens_out: u256) -> u256 {
+        fn buy(
+            ref self: ContractState, outcome_id: u256, collateral_in: u256, min_tokens_out: u256,
+        ) -> u256 {
             assert(collateral_in != 0, 'Invalid amount');
             assert(outcome_id == OUTCOME_YES || outcome_id == OUTCOME_NO, 'Invalid outcome id');
 
@@ -193,7 +194,7 @@ use core::num::traits::zero;
                 contract_address: self.collateral_token.read(),
             };
             collateral_token_dispatcher.transfer_from(caller, this_contract, collateral_in);
-            
+
             if (outcome_id == OUTCOME_YES) {
                 self.yes_pool.write(self.yes_pool.read() + collateral_after_fee);
                 self.total_yes_shares.write(self.total_yes_shares.read() + tokens_out);
@@ -203,8 +204,7 @@ use core::num::traits::zero;
             }
             self.total_collateral.write(self.total_collateral.read() + collateral_after_fee);
 
-            let outcome_token_dispatcher = IOutcomeTokenDispatcher { contract_address: self.outcome_token.read() };
-            outcome_token_dispatcher.mint_outcome(self.market_id.read(), outcome_id, caller, tokens_out);
+            self._mint_outcome(outcome_id, caller, tokens_out);
 
             tokens_out
         }
@@ -217,12 +217,11 @@ use core::num::traits::zero;
 
             let caller = get_caller_address();
 
-
             let collateral_before_fee = tokens_in;
             let fixed_fee = self.fixed_fee.read();
             let fee = (collateral_before_fee * fixed_fee) / 10000;
             let collateral_out = collateral_before_fee - fee;
-            
+
             assert(!(collateral_out < min_collateral_out), 'Slippage exceeded');
 
             let pool = if (outcome_id == OUTCOME_YES) {
@@ -233,9 +232,8 @@ use core::num::traits::zero;
 
             assert(!(pool < collateral_before_fee), 'Insufficient Liquidity');
 
-            let outcome_token_dispatcher = IOutcomeTokenDispatcher { contract_address: self.outcome_token.read() };
-            outcome_token_dispatcher.burn_outcome(self.market_id.read(), outcome_id, caller, tokens_in);
-            
+            self._burn_outcome(outcome_id, caller, tokens_in);
+
             if (outcome_id == OUTCOME_YES) {
                 self.yes_pool.write(self.yes_pool.read() - collateral_before_fee);
                 self.total_yes_shares.write(self.total_yes_shares.read() - tokens_in);
@@ -246,18 +244,20 @@ use core::num::traits::zero;
 
             self.total_collateral.write(self.total_collateral.read() - collateral_before_fee);
 
-            let collateral_token_dispatcher = IERC20Dispatcher { contract_address: self.collateral_token.read() };
+            // let protocol_basis_points =
+            // Distribute fee is here
+
+            let collateral_token_dispatcher = IERC20Dispatcher {
+                contract_address: self.collateral_token.read(),
+            };
             collateral_token_dispatcher.transfer(caller, collateral_out);
 
-            self.emit(
-                ShareSold {
-                    seller: caller,
-                    outcome_id,
-                    shares: tokens_in,
-                    collateral_out,
-                    fee
-                }
-            );
+            self
+                .emit(
+                    ShareSold {
+                        seller: caller, outcome_id, shares: tokens_in, collateral_out, fee,
+                    },
+                );
 
             collateral_out
         }
@@ -269,7 +269,7 @@ use core::num::traits::zero;
                 contract_address: self.collateral_token.read(),
             };
             collateral_token.transfer_from(get_caller_address(), get_contract_address(), amount);
-            
+
             let total_supply = self.erc20.total_supply();
 
             let mut lp_tokens: u256 = 0;
@@ -324,10 +324,7 @@ use core::num::traits::zero;
             };
             let total_supply = self.erc20.total_supply();
 
-            assert(
-                tokens <= self.erc20.balance_of(get_caller_address()),
-                'Insufficient LP Tokens',
-            );
+            assert(tokens <= self.erc20.balance_of(get_caller_address()), 'Insufficient LP Tokens');
 
             let collateral_out = (tokens * self.total_collateral.read()) / total_supply;
 
@@ -366,13 +363,17 @@ use core::num::traits::zero;
             PRICE_PRECISION / 2
         }
 
-        fn getQuoteBuy(self: @ContractState, outcome_id: u256, collateral_in: u256, user: ContractAddress) -> (u256, u256) {
+        fn getQuoteBuy(
+            self: @ContractState, outcome_id: u256, collateral_in: u256, user: ContractAddress,
+        ) -> (u256, u256) {
             let fee = (collateral_in * self.fixed_fee.read()) / 10000;
             let tokens_out = collateral_in - fee;
             (tokens_out, fee)
         }
 
-        fn getQuoteSell(self: @ContractState, outcome_id: u256, tokens_in: u256, user: ContractAddress) -> (u256, u256) {
+        fn getQuoteSell(
+            self: @ContractState, outcome_id: u256, tokens_in: u256, user: ContractAddress,
+        ) -> (u256, u256) {
             let fee = (tokens_in * self.fixed_fee.read()) / 10000;
             let collateral_out = tokens_in - fee;
             (collateral_out, tokens_in)
@@ -386,7 +387,9 @@ use core::num::traits::zero;
         fn fund_redemptions(ref self: ContractState) {
             assert(self.is_resolved.read(), 'Unresolved market');
 
-            let collateral_token_dispatcher = IERC20Dispatcher { contract_address: self.collateral_token.read() };
+            let collateral_token_dispatcher = IERC20Dispatcher {
+                contract_address: self.collateral_token.read(),
+            };
             let collateral_balance = collateral_token_dispatcher.balance_of(get_contract_address());
             if (collateral_balance > 0) {
                 collateral_token_dispatcher.transfer(self.outcome_token.read(), collateral_balance);
@@ -397,8 +400,74 @@ use core::num::traits::zero;
 
     #[generate_trait]
     pub impl InternalImpl of InternalFunctions {
-        fn when_not_paused(ref self: ContractState) {
-            self.pausable.assert_not_paused();
+        // TODO: use these internal functions within the contract
+
+        fn _fund_redemptions(ref self: ContractState) {
+            let outcome_token_dispatcher = IOutcomeTokenDispatcher {
+                contract_address: self.outcome_token.read(),
+            };
+            assert(outcome_token_dispatcher.is_resolved(self.market_id.read()), 'Invalid State');
+
+            let collateral_token_dispatcher = IERC20Dispatcher {
+                contract_address: self.collateral_token.read(),
+            };
+            let collateral_balance = collateral_token_dispatcher.balance_of(get_contract_address());
+
+            if collateral_balance > 0 {
+                collateral_token_dispatcher.transfer(self.outcome_token.read(), collateral_balance);
+            }
+        }
+
+        fn _distribute_fee(ref self: ContractState, amount: u256, protocol_basis_points: u256) {
+            let collateral_token_dispatcher = IERC20Dispatcher {
+                contract_address: self.collateral_token.read(),
+            };
+            let fee_splitter_dispatcher = IFeeSplitterDispatcher {
+                contract_address: self.fee_splitter.read(),
+            };
+            if (amount > 0) {
+                // Don't know yet if this will work though, it should
+                collateral_token_dispatcher.approve(self.fee_splitter.read(), amount);
+                fee_splitter_dispatcher
+                    .distribute(
+                        self.market_id.read(),
+                        self.collateral_token.read(),
+                        amount,
+                        protocol_basis_points,
+                    );
+            }
+        }
+
+        // We do not need this for now
+        fn _calculate_fee(ref self: ContractState, amount: u256, user: ContractAddress) {}
+
+        fn _mint_outcome(
+            ref self: ContractState, outcome_id: u256, to: ContractAddress, amount: u256,
+        ) {
+            let outcome_token_dispatcher = IOutcomeTokenDispatcher {
+                contract_address: self.outcome_token.read(),
+            };
+            outcome_token_dispatcher.mint_outcome(self.market_id.read(), outcome_id, to, amount);
+        }
+
+        fn _burn_outcome(
+            ref self: ContractState, outcome_id: u256, from: ContractAddress, amount: u256,
+        ) {
+            let outcome_token_dispatcher = IOutcomeTokenDispatcher {
+                contract_address: self.outcome_token.read(),
+            };
+            outcome_token_dispatcher.burn_outcome(self.market_id.read(), outcome_id, from, amount);
+        }
+
+        fn _transfer_outcome(
+            ref self: ContractState,
+            outcome_id: u256,
+            from: ContractAddress,
+            to: ContractAddress,
+            amount: u256,
+        ) {
+            self._burn_outcome(outcome_id, from, amount);
+            self._mint_outcome(outcome_id, to, amount);
         }
     }
 }

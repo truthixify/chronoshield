@@ -1,13 +1,14 @@
 #[starknet::contract]
 pub mod OutcomeToken {
-    use starknet::event::EventEmitter;
-use starknet::get_caller_address;
-use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc1155::{ERC1155Component, ERC1155HooksEmptyImpl};
-    use starknet::ContractAddress;
+    use starknet::event::EventEmitter;
+    use starknet::storage::{
+        Map, StoragePathEntry, StoragePointerReadAccess, StoragePointerWriteAccess,
+    };
+    use starknet::{ContractAddress, get_caller_address};
     use crate::interfaces::ioutcome_token::IOutcomeToken;
-    use starknet::storage::{Map, StoragePointerReadAccess, StoragePointerWriteAccess, StoragePathEntry};
 
     #[storage]
     pub struct Storage {
@@ -17,9 +18,9 @@ use openzeppelin::access::ownable::OwnableComponent;
         pub src5: SRC5Component::Storage,
         #[substorage(v0)]
         pub ownable: OwnableComponent::Storage,
-        pub authorized_markets: Map::<ContractAddress, bool>,
-        pub market_collateral: Map::<u256, ContractAddress>, //market_id -> ContractAddress
-        pub winning_outcome: Map::<u256, u256>, // market_id -> outcome_id
+        pub authorized_markets: Map<ContractAddress, bool>,
+        pub market_collateral: Map<u256, ContractAddress>, //market_id -> ContractAddress
+        pub winning_outcome: Map<u256, u256> // market_id -> outcome_id
     }
 
     #[event]
@@ -33,7 +34,7 @@ use openzeppelin::access::ownable::OwnableComponent;
         OwnableEvent: OwnableComponent::Event,
         OutcomeMinted: OutcomeMinted,
         OutcomeBurned: OutcomeBurned,
-        WinningOutcomeSet: WinningOutcomeSet
+        WinningOutcomeSet: WinningOutcomeSet,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -41,7 +42,7 @@ use openzeppelin::access::ownable::OwnableComponent;
         pub market_id: u256,
         pub outcome_id: u256,
         pub to: ContractAddress,
-        pub amount: u256
+        pub amount: u256,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -49,13 +50,13 @@ use openzeppelin::access::ownable::OwnableComponent;
         pub market_id: u256,
         pub outcome_id: u256,
         pub from: ContractAddress,
-        pub amount: u256
+        pub amount: u256,
     }
 
     #[derive(Drop, starknet::Event)]
     pub struct WinningOutcomeSet {
         market_id: u256,
-        outcome_id: u256
+        outcome_id: u256,
     }
 
     component!(path: ERC1155Component, storage: erc1155, event: ERC1155Event);
@@ -98,12 +99,7 @@ use openzeppelin::access::ownable::OwnableComponent;
             assert(self.winning_outcome.entry(market_id).read() == UNRESOLVED, 'Already resolved');
 
             self.winning_outcome.entry(market_id).write(outcome_id);
-            self.emit(
-                WinningOutcomeSet {
-                    market_id,
-                    outcome_id
-                }
-            );
+            self.emit(WinningOutcomeSet { market_id, outcome_id });
         }
 
         // Market Functions
@@ -112,7 +108,7 @@ use openzeppelin::access::ownable::OwnableComponent;
             market_id: u256,
             outcome_id: u256,
             to: ContractAddress,
-            amount: u256
+            amount: u256,
         ) {
             let market = get_caller_address();
             assert((self.authorized_markets.entry(market).read()), 'Unauthorized market');
@@ -120,14 +116,7 @@ use openzeppelin::access::ownable::OwnableComponent;
 
             self.erc1155.mint_with_acceptance_check(to, token_id, amount, array![].span());
 
-            self.emit(
-                OutcomeMinted {
-                    market_id,
-                    outcome_id,
-                    to,
-                    amount
-                }
-            );
+            self.emit(OutcomeMinted { market_id, outcome_id, to, amount });
         }
 
         fn burn_outcome(
@@ -135,26 +124,19 @@ use openzeppelin::access::ownable::OwnableComponent;
             market_id: u256,
             outcome_id: u256,
             from: ContractAddress,
-            amount: u256
+            amount: u256,
         ) {
             let market = get_caller_address();
             assert((self.authorized_markets.entry(market).read()), 'Unauthorized market');
             let token_id = self.encode_token_id(market_id, outcome_id);
 
             self.erc1155.burn(from, token_id, amount);
-            self.emit(
-                OutcomeBurned {
-                    market_id,
-                    outcome_id,
-                    from,
-                    amount
-                }
-            );
+            self.emit(OutcomeBurned { market_id, outcome_id, from, amount });
         }
 
         // Read functions
         fn balance_of_outcome(
-            self: @ContractState, user: ContractAddress, market_id: u256, outcome_id: u256
+            self: @ContractState, user: ContractAddress, market_id: u256, outcome_id: u256,
         ) -> u256 {
             let token_id = (market_id * 256) + outcome_id;
             self.erc1155.balance_of(user, token_id)
