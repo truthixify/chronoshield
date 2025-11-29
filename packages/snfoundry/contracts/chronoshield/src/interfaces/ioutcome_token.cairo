@@ -30,4 +30,8 @@ pub trait IOutcomeToken<TContractState> {
         self: @TContractState, user: ContractAddress, market_id: u256, outcome_id: u256,
     ) -> u256;
     fn is_resolved(self: @TContractState, market_id: u256) -> bool;
+
+    fn set_market_authorization(
+        ref self: TContractState, address: ContractAddress, authorized: bool,
+    );
 }

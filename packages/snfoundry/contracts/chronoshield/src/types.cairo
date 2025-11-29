@@ -93,7 +93,7 @@ pub struct Resolution {
     pub has_been_disputed: bool,
 }
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
+#[derive(Copy, Drop, Serde, PartialEq, starknet::Store)]
 pub enum MarketStatus {
     #[default]
     ACTIVE,
@@ -112,6 +112,7 @@ pub struct MarketParams {
     pub creator_stake: u256,
     pub outcome_count: u8,
     pub liquid_parameter: u256,
+    pub fixed_fee: u256,
 }
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
@@ -121,11 +122,12 @@ pub struct Market {
     pub market_type: MarketType,
     pub amm: ContractAddress,
     pub collateral_token: ContractAddress,
-    pub close_time: u256,
+    pub close_time: u64,
     pub category: felt252,
     pub metadata_uri: felt252,
     pub creator_stake: u256,
     pub outcome_count: u8,
     pub stake_refunded: bool,
     pub status: MarketStatus,
+    pub fixed_fee: u256,
 }

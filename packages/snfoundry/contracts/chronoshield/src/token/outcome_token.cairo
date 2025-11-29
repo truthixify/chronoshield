@@ -35,6 +35,7 @@ pub mod OutcomeToken {
         OutcomeMinted: OutcomeMinted,
         OutcomeBurned: OutcomeBurned,
         WinningOutcomeSet: WinningOutcomeSet,
+        MarketAuthorized: MarketAuthorized,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -57,6 +58,13 @@ pub mod OutcomeToken {
     pub struct WinningOutcomeSet {
         market_id: u256,
         outcome_id: u256,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct MarketAuthorized {
+        #[key]
+        pub market: ContractAddress,
+        pub authorized: bool,
     }
 
     component!(path: ERC1155Component, storage: erc1155, event: ERC1155Event);
@@ -144,6 +152,13 @@ pub mod OutcomeToken {
 
         fn is_resolved(self: @ContractState, market_id: u256) -> bool {
             self.winning_outcome.entry(market_id).read() != UNRESOLVED
+        }
+
+        fn set_market_authorization(
+            ref self: ContractState, address: ContractAddress, authorized: bool,
+        ) {
+            self.authorized_markets.entry(address).write(authorized);
+            self.emit(MarketAuthorized { market: address, authorized });
         }
     }
 

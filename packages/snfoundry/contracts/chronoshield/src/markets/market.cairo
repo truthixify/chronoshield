@@ -128,7 +128,7 @@ pub mod Market {
         collateral_token: ContractAddress,
         outcome_token: ContractAddress,
         fee_splitter: ContractAddress,
-        horizon_perks: ContractAddress,
+        // horizon_perks: ContractAddress,
         close_time: u64,
         // lp_token_name: ByteArray,
         // lp_token_symbol: ByteArray,
@@ -140,7 +140,7 @@ pub mod Market {
         self.collateral_token.write(collateral_token);
         self.outcome_token.write(outcome_token);
         self.fee_splitter.write(fee_splitter);
-        self.horizon_perks.write(horizon_perks);
+        // self.horizon_perks.write(horizon_perks);
         self.close_time.write(close_time);
         self.yes_pool.write(0);
         self.no_pool.write(0);
