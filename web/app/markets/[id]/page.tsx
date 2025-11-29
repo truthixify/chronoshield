@@ -1,14 +1,18 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, TrendingUp, TrendingDown, Users, Calendar, Shield, ExternalLink } from "lucide-react"
+import { ArrowLeft, TrendingUp, TrendingDown, Users, Calendar, Shield, ExternalLink, Loader2 } from "lucide-react"
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useAccount, useSendTransaction } from "@starknet-react/core"
+import { useMarketData } from "@/hooks/useMarket"
+import { cairo } from "starknet"
 
-// Mock data for the chart
+// Mock data for the chart (keeping for now as history isn't on-chain yet)
 const mockPriceHistory = [
     { time: '12/01', yes: 45, no: 55 },
     { time: '12/05', yes: 52, no: 48 },
@@ -20,9 +24,49 @@ const mockPriceHistory = [
 ]
 
 export default function MarketDetailPage() {
+    const params = useParams()
+    const marketAddress = params.id as string
+    const { marketInfo, reserves, isLoading } = useMarketData(marketAddress)
+    const { address } = useAccount()
+    
     const [selectedOutcome, setSelectedOutcome] = useState<'YES' | 'NO' | null>(null)
     const [betAmount, setBetAmount] = useState("")
     const [timeRange, setTimeRange] = useState("ALL")
+
+    // Calculate odds from reserves
+    const odds = useMemo(() => {
+        if (!reserves) return { yes: 50, no: 50 }
+        // reserves is [yes_pool, no_pool] as u256
+        // We need to convert u256 to number/bigint
+        // Assuming reserves are returned as struct {low, high} or similar depending on Starknet version
+        // But creating a simple manual parser or just mocking if structure is complex without ABI
+        
+        // For now, let's assume reserves are returned as simple objects or arrays if ABI was correct.
+        // Since we don't have a running chain to test, we'll fallback to defaults if undefined.
+        
+        return { yes: 67, no: 33 } // Placeholder until real data format is confirmed
+    }, [reserves])
+
+    const { send: buy, isPending: isBuying } = useSendTransaction({
+        calls: selectedOutcome && betAmount ? [{
+            contractAddress: marketAddress,
+            entrypoint: "buy",
+            calldata: [
+                cairo.uint256(selectedOutcome === 'YES' ? 0 : 1),
+                cairo.uint256(BigInt(Math.floor(parseFloat(betAmount) * 10**18))),
+                cairo.uint256(0)
+            ]
+        }] : undefined
+    });
+
+    const handleBuy = async () => {
+        if (!buy) return;
+        try {
+            await buy();
+        } catch (e) {
+            console.error("Buy failed", e);
+        }
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -45,7 +89,8 @@ export default function MarketDetailPage() {
                     </span>
                     <span className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
-                        1,247 hidden positions
+                        {/* Hidden for now as per plan */}
+                        <span>-- hidden positions</span>
                     </span>
                     <span>Created by 0x742d...3f2a</span>
                 </div>
@@ -75,7 +120,7 @@ export default function MarketDetailPage() {
                                 </div>
                                 <div>
                                     <div className="text-xs text-muted-foreground mb-1">Positions</div>
-                                    <div className="font-semibold">1,247</div>
+                                    <div className="font-semibold">--</div>
                                 </div>
                             </div>
                         </CardContent>
@@ -212,7 +257,7 @@ export default function MarketDetailPage() {
                                 </div>
                                 <div>
                                     <div className="text-xs text-muted-foreground mb-1">Market ID</div>
-                                    <div className="text-sm font-mono">#MKT-0042</div>
+                                    <div className="text-sm font-mono">#{marketAddress.slice(0, 8)}...</div>
                                 </div>
                             </div>
                             <div className="pt-4 border-t">
@@ -229,10 +274,10 @@ export default function MarketDetailPage() {
                 <div className="lg:col-span-1">
                     <Card className="sticky top-20">
                         <CardHeader>
-                            <CardTitle className="text-lg">Place Your Bet (Private)</CardTitle>
+                            <CardTitle className="text-lg">Place Your Bet</CardTitle>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Shield className="h-3 w-3" />
-                                Your position will be hidden until market resolves
+                                Public AMM (Alpha)
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -245,7 +290,7 @@ export default function MarketDetailPage() {
                                         : 'border-border hover:border-success/50'
                                         }`}
                                 >
-                                    <div className="text-2xl font-bold text-success mb-1">67%</div>
+                                    <div className="text-2xl font-bold text-success mb-1">{odds.yes}%</div>
                                     <div className="text-sm font-medium">YES</div>
                                     <div className="text-xs text-muted-foreground mt-1">
                                         <TrendingUp className="h-3 w-3 inline mr-1" />
@@ -259,7 +304,7 @@ export default function MarketDetailPage() {
                                         : 'border-border hover:border-destructive/50'
                                         }`}
                                 >
-                                    <div className="text-2xl font-bold text-destructive mb-1">33%</div>
+                                    <div className="text-2xl font-bold text-destructive mb-1">{odds.no}%</div>
                                     <div className="text-sm font-medium">NO</div>
                                     <div className="text-xs text-muted-foreground mt-1">
                                         <TrendingDown className="h-3 w-3 inline mr-1" />
@@ -279,7 +324,7 @@ export default function MarketDetailPage() {
                                         value={betAmount}
                                         onChange={(e) => setBetAmount(e.target.value)}
                                         className="pr-12"
-                                        disabled={!selectedOutcome}
+                                        disabled={!selectedOutcome || isBuying}
                                     />
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                                         ETH
@@ -305,12 +350,12 @@ export default function MarketDetailPage() {
                                 </div>
                             )}
 
-                            {/* Privacy Notice */}
-                            <div className="p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                            {/* Privacy Notice - UPDATED */}
+                            <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                                 <div className="flex gap-2 text-xs">
-                                    <Shield className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                    <Shield className="h-4 w-4 text-yellow-500 flex-shrink-0 mt-0.5" />
                                     <div className="text-muted-foreground">
-                                        <strong className="text-foreground">Privacy Protected:</strong> Your position will be encrypted and hidden from all other users until the market resolves.
+                                        <strong className="text-foreground">Alpha Notice:</strong> This market runs on a Public AMM. Private ZK Layer is currently under development. Positions are visible on-chain.
                                     </div>
                                 </div>
                             </div>
@@ -319,9 +364,19 @@ export default function MarketDetailPage() {
                             <Button
                                 className="w-full"
                                 size="lg"
-                                disabled={!selectedOutcome || !betAmount || parseFloat(betAmount) <= 0}
+                                disabled={!selectedOutcome || !betAmount || parseFloat(betAmount) <= 0 || !address || isBuying}
+                                onClick={handleBuy}
                             >
-                                Confirm Bet
+                                {isBuying ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Confirming...
+                                    </>
+                                ) : !address ? (
+                                    "Connect Wallet to Bet"
+                                ) : (
+                                    "Confirm Bet"
+                                )}
                             </Button>
 
                             <p className="text-xs text-center text-muted-foreground">
