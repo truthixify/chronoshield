@@ -1,18 +1,36 @@
-.vscode/**
-node_modules
-package-lock.json
-.idea
+# Exclude chats directories at any level
+**/chats/
+chats/
 
-# yarn / eslint
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.eslintcache
+# Exclude resources directories at any level
+**/resources/
+resources/
+
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock file for libraries (uncomment if this is a library)
+# Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
 .DS_Store
-.vercel
+Thumbs.db
 
-**/.env*
-!**/.env.example
+# Logs
+*.log
+
+# Node modules (if any)
+node_modules/
+
+# Build directories
+/build/
+**/build/
+/dist/
+**/dist/
